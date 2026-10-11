@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import sqlite3
 import time
+import os
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -9,7 +10,12 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, HttpUrl
 
 
-DB_PATH = Path(__file__).resolve().parent.parent / "statuspulse.sqlite3"
+DB_PATH = Path(
+    os.getenv(
+        "STATUSPULSE_DB_PATH",
+        Path(__file__).resolve().parent.parent / "statuspulse.sqlite3",
+    )
+)
 app = FastAPI(title="StatusPulse", version="0.1.0")
 
 
