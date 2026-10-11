@@ -1,4 +1,5 @@
 # StatusPulse
+
 [![CI](https://github.com/m69545924-ship-it/StatusPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/m69545924-ship-it/StatusPulse/actions/workflows/ci.yml)
 
 StatusPulse is a lightweight uptime monitoring API for websites and services. It stores monitored endpoints and check history in SQLite, measures response time, and exposes a small REST API that can power a dashboard.
@@ -10,18 +11,31 @@ StatusPulse is a lightweight uptime monitoring API for websites and services. It
 - Track status code, latency, and errors
 - Persist history with SQLite
 - Health endpoint for deployment checks
-- Automated tests for the core API flow
+- Automated tests with GitHub Actions
+- Docker and Docker Compose support
 
 ## Run locally
 
 ```bash
 python -m venv .venv
-\.venv\Scripts\activate
+.\.venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Open the API docs at `http://127.0.0.1:8000/docs`.
+Open the API documentation at:
+
+`http://127.0.0.1:8000/docs`
+
+## Run with Docker
+
+```bash
+docker compose up --build
+```
+
+The API and interactive documentation will be available at:
+
+`http://127.0.0.1:8000/docs`
 
 ## API overview
 
@@ -36,3 +50,7 @@ Open the API docs at `http://127.0.0.1:8000/docs`.
 ## Quality goals
 
 The project favors explicit boundaries, small endpoints, deterministic persistence, and tests that cover the user-facing workflow.
+
+## License
+
+This project is licensed under the MIT License.
