@@ -1,4 +1,5 @@
 # StatusPulse
+[![CI](https://github.com/m69545924-ship-it/StatusPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/m69545924-ship-it/StatusPulse/actions/workflows/ci.yml)
 
 StatusPulse is a lightweight uptime monitoring API for websites and services. It stores monitored endpoints and check history in SQLite, measures response time, and exposes a small REST API that can power a dashboard.
 
