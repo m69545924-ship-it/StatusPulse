@@ -1,0 +1,12 @@
+services:
+  statuspulse:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      STATUSPULSE_DB_PATH: /app/data/statuspulse.sqlite3
+    volumes:
+      - statuspulse-data:/app/data
+
+volumes:
+  statuspulse-data:
