@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StatusPulse Dashboard</title>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; }
+      body { margin: 0; min-height: 100vh; background: #0f172a; color: #e2e8f0; }
+      main { width: min(960px, calc(100% - 32px)); margin: 0 auto; padding: 56px 0; }
+      h1 { margin: 0 0 8px; font-size: 36px; }
+      .subtitle { color: #94a3b8; margin: 0 0 32px; }
+      .card { background: #111c33; border: 1px solid #24324d; border-radius: 14px; padding: 22px; margin-bottom: 18px; }
+      form { display: grid; grid-template-columns: 1fr 2fr auto; gap: 12px; }
+      input, button { border: 1px solid #334155; border-radius: 8px; padding: 12px; font: inherit; }
+      input { background: #0b1222; color: #e2e8f0; }
+      button { background: #2563eb; color: white; cursor: pointer; font-weight: 600; }
+      button:hover { background: #1d4ed8; }
+      .monitor { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-top: 1px solid #24324d; padding: 18px 0; }
+      .monitor:first-child { border-top: 0; padding-top: 0; }
+      .name { font-weight: 700; }
+      .url { color: #94a3b8; font-size: 14px; margin-top: 5px; word-break: break-all; }
+      .status { color: #94a3b8; white-space: nowrap; }
+      .status.up { color: #4ade80; }
+      .status.down { color: #fb7185; }
+      .empty { color: #94a3b8; }
+      @media (max-width: 680px) { form { grid-template-columns: 1fr; } .monitor { align-items: flex-start; flex-direction: column; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>StatusPulse</h1>
+      <p class="subtitle">A lightweight uptime monitoring dashboard.</p>
+      <section class="card">
+        <h2>Add monitor</h2>
+        <form id="monitor-form">
+          <input id="name" placeholder="Service name" required />
+          <input id="url" type="url" placeholder="https://example.com" required />
+          <button type="submit">Add monitor</button>
+        </form>
+      </section>
+      <section class="card">
+        <h2>Monitors</h2>
+        <div id="monitors"><p class="empty">Loading monitors...</p></div>
+      </section>
+    </main>
+    <script>
+      const container = document.querySelector('#monitors');
+      const form = document.querySelector('#monitor-form');
+      function render(monitors) {
+        if (!monitors.length) { container.innerHTML = '<p class="empty">No monitors yet. Add your first service above.</p>'; return; }
+        container.innerHTML = monitors.map((monitor) => `<article class="monitor" data-id="${monitor.id}"><div><div class="name">${monitor.name}</div><div class="url">${monitor.url}</div></div><div><span class="status">Not checked</span> <button class="check">Check now</button></div></article>`).join('');
+        document.querySelectorAll('.check').forEach((button) => button.addEventListener('click', async () => {
+          const article = button.closest('.monitor'); const status = article.querySelector('.status');
+          button.disabled = true; status.textContent = 'Checking...';
+          const response = await fetch(`/monitors/${article.dataset.id}/checks`, { method: 'POST' });
+          const result = await response.json(); status.textContent = `${result.status} · ${result.latency_ms} ms`; status.className = `status ${result.status}`; button.disabled = false;
+        }));
+      }
+      async function loadMonitors() { render(await (await fetch('/monitors')).json()); }
+      form.addEventListener('submit', async (event) => { event.preventDefault(); await fetch('/monitors', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ name: name.value, url: url.value }) }); form.reset(); await loadMonitors(); });
+      loadMonitors();
+    </script>
+  </body>
+</html>

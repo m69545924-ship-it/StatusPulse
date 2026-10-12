@@ -7,16 +7,13 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, HttpUrl
 
 
-DB_PATH = Path(
-    os.getenv(
-        "STATUSPULSE_DB_PATH",
-        Path(__file__).resolve().parent.parent / "statuspulse.sqlite3",
-    )
-)
+DB_PATH = Path(os.getenv("STATUSPULSE_DB_PATH", Path(__file__).resolve().parent.parent / "statuspulse.sqlite3"))
 app = FastAPI(title="StatusPulse", version="0.1.0")
+STATIC_INDEX = Path(__file__).resolve().parent / "static" / "index.html"
 
 
 class MonitorCreate(BaseModel):
@@ -60,6 +57,11 @@ initialize()
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/", include_in_schema=False)
+def dashboard() -> FileResponse:
+    return FileResponse(STATIC_INDEX)
 
 
 @app.get("/monitors")
